@@ -1,0 +1,8 @@
+.stack-work/
+.vscode/
+*.json
+*.hi
+*.o
+PPP.code-workspace
+stack.yaml
+stack.yaml.lock

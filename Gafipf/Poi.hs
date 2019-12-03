@@ -1,14 +1,22 @@
 module Gafipf.Poi
 ( 
     Poi,
-    criaPois
+    criaPoi,
+    getPonto,
+    getLocal
 ) where
 
 type Ponto = (Double, Double)
 data Poi = Poi {
-    point :: Ponto,
-    poi :: String
+    ponto :: Ponto,
+    local :: String
 }
 
-criaPois :: Double -> Double -> String -> Poi
-criaPois lat longe poi = Poi lat longe poi
+criaPoi :: Ponto -> String -> Poi
+criaPoi = Poi
+
+getPonto :: Poi -> Ponto
+getPonto = ponto
+
+getLocal :: Poi -> String
+getLocal = local

@@ -1,18 +1,35 @@
 module Gafipf.Coordenadas
 ( 
     Coordenada,
-    criaCoordenadas
+    criaCoordenada,
+    getPoints,
+    getPoint,
+    getAltitude,
+    getTime
 ) where
 
-import Data.Time
+import Gafipf.CsvParser
+import Data.List (intercalate, splitAt)
 
 type Ponto = (Double, Double)
 
 data Coordenada = Coordenada {
     ponto :: Ponto,
     altitude :: Double,
-    time :: TimeOfDay
+    time :: Int
 }
 
-criaCoordenadas :: Double -> Double -> Double -> TimeOfDay -> Coordenada
-criaCoordenadas lat long alt time = Coordenada lat long alt time
+criaCoordenada :: Ponto -> Double -> Int -> Coordenada
+criaCoordenada = Coordenada
+
+getPoints :: [Coordenada] -> [Ponto]
+getPoints = map ponto
+
+getPoint :: Coordenada -> Ponto
+getPoint = ponto
+
+getAltitude :: Coordenada -> Double
+getAltitude = altitude
+
+getTime :: Coordenada -> Int
+getTime = time
