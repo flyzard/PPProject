@@ -3,11 +3,11 @@ module Gafipf.Percursos
     Percurso,
     criaPercurso,
     toJson,
-    getSitios, -- Remove
-    isPoiInPercurso
+    getGanhoAltitude
 ) where
 
 import Data.List (intercalate)
+import Data.Fixed
 import Gafipf.Poi
 import Gafipf.Coordenadas
 
@@ -18,15 +18,16 @@ data Percurso = Percurso {
 
 type Ponto = (Double, Double)
 
+toJson :: Percurso -> String
+toJson p = "{\"Categoria\": \"" ++ getCategoria p ++ "\",\n" ++ 
+    "\"Tempo total (m)\":" ++ show (getTempo p) ++ ",\n\"Ganho acumulado\":" ++ 
+    show (getGanho p) ++ ",\n\"Ganho acumulado por m\":" ++ 
+    show (getGanhoMetro p) ++ ",\n\"Pontos de Interesse\": [\"" ++ 
+    intercalate "\",\n\t\"" (sitios p) ++ "\"]}"
+
+    
 criaPercurso :: [Coordenada] -> [Poi] -> Percurso
 criaPercurso coordenadas pois = Percurso coordenadas (getPoisInPercurso coordenadas pois)
-
-toJson :: Percurso -> String
-toJson p = "{\"Categoria\": \"" ++ getCategoria p ++ "\"\n" ++ 
-    "\"Tempo total (m)\":" ++ show (getTempo p) ++ "\n\"Ganho acumulado\":" ++ 
-    show (getGanho p) ++ "\n\"Ganho acumulado por m\":" ++ 
-    show (getGanhoMetro p) ++ "\n\"Pontos de Interesse\": [\"" ++ 
-    intercalate "\", \" " (sitios p) ++ "\n\"]}"
 
 getCategoria :: Percurso -> String
 getCategoria p
@@ -42,17 +43,25 @@ getTempo :: Percurso -> Int
 getTempo p = fromIntegral (getTime (last (coordenadas p)) - fromIntegral (getTime (head (coordenadas p)))) `div` 60
 
 getGanho :: Percurso -> Int
-getGanho p = 3
--- getGanho p = round (foldl (\acc (x:s:xs) -> acc + if x < s then x-s else 0) 0 (map getAltitude (coordenadas p)))
+getGanho p = round (getGanhoAltitude (map getAltitude (coordenadas p)))
 
-getGanhoMetro :: Percurso -> Int
-getGanhoMetro p = fromIntegral (getGanho p) `div` fromIntegral (getDistancia p)
+getGanhoAltitude :: [Double] -> Double
+getGanhoAltitude [] = 0
+getGanhoAltitude [x] = 0
+getGanhoAltitude [x,s] = if x < s then s-x else 0
+getGanhoAltitude (x:s:xs) = (if x < s then s-x else 0) + getGanhoAltitude (s:xs)
+
+getGanhoMetro :: Percurso -> Double
+getGanhoMetro p = round3dp (getGanhoAltitude (map getAltitude (coordenadas p)) / getDistancia p)
+
+round3dp :: Double -> Double
+round3dp x = fromIntegral (round $ x * 1e3) / 1e3
 
 getSitios :: Percurso -> [String]
 getSitios p = map read (sitios p)
 
-getDistancia :: Percurso -> Int
-getDistancia p = round (85000 * distancia (map getPoint (coordenadas p))) 
+getDistancia :: Percurso -> Double
+getDistancia p = 85000 * distancia (map getPoint (coordenadas p))
 
 getPoisInPercurso :: [Coordenada] -> [Poi] -> [String]
 getPoisInPercurso cs ps = [getLocal x | x <- ps, isPoiInPercurso cs x]
@@ -60,16 +69,10 @@ getPoisInPercurso cs ps = [getLocal x | x <- ps, isPoiInPercurso cs x]
 isPoiInPercurso :: [Coordenada] -> Poi -> Bool
 isPoiInPercurso c p = 
     let ponto = getPonto p
-    in foldl (\acc x -> inNeighbourhood x ponto || acc) False (getPoints c)
+    in foldl (\acc x -> inNeighbourhood ponto x || acc) False (getPoints c)
 
 inNeighbourhood :: Ponto -> Ponto -> Bool
-inNeighbourhood (x1, y1) (x2, y2) = 
-    let res = getNumResolution x1
-        maxX = x2 + res
-        minX = x2 - res
-        maxY = y2 + res
-        minY = y2 - res
-    in (x1 <= maxX) && (x1 > minX) && (y1 <= maxY) && (y1 > minY)
+inNeighbourhood p1 p2 = getNumResolution (fst p1) > distancia2Pontos p1 p2
 
 distancia2Pontos :: Ponto -> Ponto -> Double
 distancia2Pontos (x1, y1) (x2, y2) = sqrt ((x2 - x1) ^ 2 + (y2 - y1) ^ 2)
@@ -84,4 +87,4 @@ isInt :: (RealFrac a) => a -> Bool
 isInt x = x == fromInteger (round x)
 
 getNumResolution :: (RealFrac a) => a -> a
-getNumResolution num = last [fromIntegral x | x <- [(-10)..0], isInt (num / 10^^(x))]
+getNumResolution num = last [10^^x | x <- [(-10)..0], isInt (num / 10^^x)]

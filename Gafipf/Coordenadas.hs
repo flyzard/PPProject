@@ -19,6 +19,9 @@ data Coordenada = Coordenada {
     time :: Int
 }
 
+instance Show Coordenada where
+    show (Coordenada p a t) = "(" ++ show (fst p) ++ ", " ++ show (snd p) ++ ") -> " ++ "Altitude: " ++ show a ++ " -> " ++ "time: " ++ show t  ++ "\n"
+
 criaCoordenada :: Ponto -> Double -> Int -> Coordenada
 criaCoordenada = Coordenada
 

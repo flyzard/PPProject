@@ -4,7 +4,6 @@ import System.Environment
 import System.IO
 import System.IO.Error
 import Control.Exception
-import Data.List
 import Gafipf.Percursos
 import Gafipf.CsvParser
 import Gafipf.Coordenadas

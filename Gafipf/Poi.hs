@@ -12,6 +12,9 @@ data Poi = Poi {
     local :: String
 }
 
+instance Show Poi where
+    show (Poi p l) = "(" ++ show (fst p) ++ ", " ++ show (snd p) ++ ") -> " ++ l ++ "\n"
+
 criaPoi :: Ponto -> String -> Poi
 criaPoi = Poi
 
