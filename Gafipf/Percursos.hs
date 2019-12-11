@@ -19,11 +19,11 @@ data Percurso = Percurso {
 type Ponto = (Double, Double)
 
 toJson :: Percurso -> String
-toJson p = "{\"Categoria\": \"" ++ getCategoria p ++ "\",\n" ++ 
+toJson p = "{\n\"Categoria\": \"" ++ getCategoria p ++ "\",\n" ++ 
     "\"Tempo total (m)\":" ++ show (getTempo p) ++ ",\n\"Ganho acumulado\":" ++ 
     show (getGanho p) ++ ",\n\"Ganho acumulado por m\":" ++ 
     show (getGanhoMetro p) ++ ",\n\"Pontos de Interesse\": [\"" ++ 
-    intercalate "\",\n\t\"" (sitios p) ++ "\"]}"
+    intercalate "\",\n\t\"" (sitios p) ++ "\"]\n}"
 
     
 criaPercurso :: [Coordenada] -> [Poi] -> Percurso
