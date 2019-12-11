@@ -6,6 +6,3 @@
 PPP.code-workspace
 stack.yaml
 stack.yaml.lock
-./Main
-./Main.hi
-./Main.o
