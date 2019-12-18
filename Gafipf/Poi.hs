@@ -6,7 +6,8 @@ module Gafipf.Poi
     getLocal
 ) where
 
-type Ponto = (Double, Double)
+import Gafipf.Coordenadas (Ponto)
+
 data Poi = Poi {
     ponto :: Ponto,
     local :: String

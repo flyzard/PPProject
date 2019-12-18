@@ -1,15 +1,12 @@
 module Gafipf.Coordenadas
-( 
-    Coordenada,
+( Coordenada,
     criaCoordenada,
     getPoints,
     getPoint,
     getAltitude,
-    getTime
+    getTime,
+    Ponto
 ) where
-
-import Gafipf.CsvParser
-import Data.List (intercalate, splitAt)
 
 type Ponto = (Double, Double)
 
@@ -20,7 +17,8 @@ data Coordenada = Coordenada {
 }
 
 instance Show Coordenada where
-    show (Coordenada p a t) = "(" ++ show (fst p) ++ ", " ++ show (snd p) ++ ") -> " ++ "Altitude: " ++ show a ++ " -> " ++ "time: " ++ show t  ++ "\n"
+    show (Coordenada p a t) = "(" ++ show (fst p) ++ ", " ++ show (snd p) ++ ") -> "
+        ++ "Altitude: " ++ show a ++ " -> " ++ "time: " ++ show t  ++ "\n"
 
 criaCoordenada :: Ponto -> Double -> Int -> Coordenada
 criaCoordenada = Coordenada

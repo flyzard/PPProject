@@ -9,15 +9,10 @@ import Gafipf.CsvParser
 import Gafipf.Coordenadas
 import Gafipf.Poi
 import Test.QuickCheck
-import Data.List
 
 main :: IO ()
 main = toTry `catch` handler
 
--- toTry = do (percursoPath:pontosPath:jsonPath:_) <- getArgs
---            percurso <- readFile percursoPath
---            pontos <- readFile pontosPath
---            buildJson percurso pontos jsonPath
 toTry :: IO ()
 toTry = do args <- getArgs
            controller args
@@ -31,7 +26,7 @@ controller [r, p, f] = do percurso <- readFile r
 controller xs = error "Numero de argumentos invalido!"
 
 runTests :: IO ()
-runTests = do quickCheck prop_
+runTests = return () --do quickCheck prop_
 
 handler :: IOError -> IO ()     
 handler e  

@@ -6,22 +6,6 @@ module Gafipf.CsvParser
   , readTime
   ) where
 
--- parseCsv :: CsvFileType -> String -> [[String]]
--- parseCsv t
---     | t == Coordenadas = buildCoordenadas . f
---     | t == Pois = buildPois . f
---     | otherwise = []
---     where f = map splitCsvValues . lines
--- ponto :: Ponto,
--- altitude :: Double,
--- time :: TimeOfDay
--- buildCoordenadas :: [String] -> Coordenada
--- buildCoordenadas s =
--- buildPois
--- percurso <- readFile "resources/BairrosAntigosLisboa.csv"
--- pois <- readFile "resources/LisboaPOI.csv"
--- ls = lines percurso
--- map splitCsvValues ls
 splitByChar :: Char -> String -> [String]
 splitByChar c [x] = [[x]]
 splitByChar c (x:xs)

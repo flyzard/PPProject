@@ -6,24 +6,22 @@ module Gafipf.Percursos
     getGanhoAltitude
 ) where
 
-import Data.List (intercalate)
-import Data.Fixed
 import Gafipf.Poi
 import Gafipf.Coordenadas
+import Data.List (intercalate)
+import Numeric
 
 data Percurso = Percurso {
     coordenadas :: [Coordenada],
     sitios :: [String]
 }
 
-type Ponto = (Double, Double)
-
 --Creates a template of json file
 toJson :: Percurso -> String
 toJson p = "{\n\"Categoria\": \"" ++ getCategoria p ++ "\",\n" ++ 
     "\"Tempo total (m)\":" ++ show (getTempo p) ++ ",\n\"Ganho acumulado\":" ++ 
     show (getGanho p) ++ ",\n\"Ganho acumulado por m\":" ++ 
-    show (getGanhoMetro p) ++ ",\n\"Pontos de Interesse\": [\"" ++ 
+    showDecimal (ganhoAcumulado p) ++ ",\n\"Pontos de Interesse\": [\"" ++ 
     intercalate "\",\n\t\"" (sitios p) ++ "\"]\n}"
 
  --Creates a route   
@@ -43,7 +41,7 @@ getCategoria p
 
 --The amount of time it takes to hike the route
 getTempo :: Percurso -> Int
-getTempo p = fromIntegral (getTime (last (coordenadas p)) - fromIntegral (getTime (head (coordenadas p)))) `div` 60
+getTempo p = fromIntegral (getTime (last $ coordenadas p) - getTime (head $ coordenadas p)) `div` 60
 
 --How much you'll climb in the hike
 getGanho :: Percurso -> Int
@@ -57,12 +55,16 @@ getGanhoAltitude [x,s] = if x < s then s-x else 0
 getGanhoAltitude (x:s:xs) = (if x < s then s-x else 0) + getGanhoAltitude (s:xs)
 
 --How much you'll climb for each metre you walk horizontally
-getGanhoMetro :: Percurso -> Double
-getGanhoMetro p = round3dp (getGanhoAltitude (map getAltitude (coordenadas p)) / getDistancia p)
+ganhoAcumulado :: Percurso -> Double
+ganhoAcumulado p = round3dp (getGanhoAltitude (map getAltitude (coordenadas p)) / getDistancia p)
 
 --Rounds numbers to their 3 decimal place
 round3dp :: Double -> Double
 round3dp x = fromIntegral (round $ x * 1e3) / 1e3
+
+-- Necessario para representar o numero em decimal, em vez de notação cientifica
+showDecimal :: Double -> String
+showDecimal x = showFFloat Nothing x ""
 
 --Returns the names of the places visited
 getSitios :: Percurso -> [String]
